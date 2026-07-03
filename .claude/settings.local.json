@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($env:Path += \";C:\\\\Program Files\\\\nodejs\"; node -e \"console.log\\(require\\('crypto'\\).randomBytes\\(32\\).toString\\('hex'\\)\\)\")",
+      "PowerShell($env:Path += \";C:\\\\Program Files\\\\nodejs\"; cd d:\\\\AI\\\\Tiktok; npm run dev)"
+    ]
+  }
+}
