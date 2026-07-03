@@ -1,85 +1,66 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
 }
 
 datasource db {
   provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
-// Singleton row (id = 1): the one TikTok account this local app tracks.
 model Account {
-  id                    Int      @id @default(1)
-  tiktokOpenId          String   @unique
-  displayName           String
-  avatarUrl             String
-  accessTokenEncrypted  String
+  id Int @id @default(autoincrement())
+  tiktokOpenId String @unique
+  displayName String
+  avatarUrl String
+  accessTokenEncrypted String
   refreshTokenEncrypted String
-  accessTokenExpiresAt  DateTime
+  accessTokenExpiresAt DateTime
   refreshTokenExpiresAt DateTime
-  lastSyncedAt          DateTime?
-  createdAt             DateTime @default(now())
-
-  snapshots AccountSnapshot[]
-  videos    Video[]
+  lastSyncedAt DateTime?
+  createdAt DateTime @default(now())
 }
 
-// One row per day the account-level stats were synced.
 model AccountSnapshot {
-  id              Int      @id @default(autoincrement())
-  accountId       Int
-  account         Account  @relation(fields: [accountId], references: [id])
-  capturedAt      DateTime
-  followerCount   Int?
-  followingCount  Int?
-  totalLikeCount  Int?
-  videoCount      Int?
-
-  @@unique([accountId, capturedAt])
+  id Int @id @default(autoincrement())
+  accountId Int
+  capturedAt DateTime
+  followerCount Int?
+  followingCount Int?
+  totalLikeCount Int?
+  videoCount Int?
 }
 
-// One row per TikTok video, upserted on every sync.
 model Video {
-  id              String   @id
-  accountId       Int
-  account         Account  @relation(fields: [accountId], references: [id])
-  description     String
-  hashtags        String
+  id String @id
+  accountId Int
+  description String
+  hashtags String
   durationSeconds Int
-  coverImageUrl   String
-  shareUrl        String
-  embedLink       String
-  postedAt        DateTime
-  bookmarkedAt    DateTime?
-  firstSeenAt     DateTime @default(now())
-  lastSyncedAt    DateTime
-
-  snapshots VideoSnapshot[]
+  coverImageUrl String
+  shareUrl String
+  embedLink String
+  postedAt DateTime
+  bookmarkedAt DateTime?
+  firstSeenAt DateTime @default(now())
+  lastSyncedAt DateTime
 }
 
-// One row per video per sync day — drives every trend chart.
 model VideoSnapshot {
-  id            Int      @id @default(autoincrement())
-  videoId       String
-  video         Video    @relation(fields: [videoId], references: [id])
-  capturedAt    DateTime
-  viewCount     Int
-  likeCount     Int
-  commentCount  Int
-  shareCount    Int
-
-  @@unique([videoId, capturedAt])
+  id Int @id @default(autoincrement())
+  videoId String
+  capturedAt DateTime
+  viewCount Int
+  likeCount Int
+  commentCount Int
+  shareCount Int
 }
 
-// Operational history, shown on the Settings page.
 model SyncLog {
-  id           Int       @id @default(autoincrement())
-  startedAt    DateTime  @default(now())
-  finishedAt   DateTime?
-  status       String
-  videosSynced Int       @default(0)
+  id Int @id @default(autoincrement())
+  startedAt DateTime @default(now())
+  finishedAt DateTime?
+  status String
+  videosSynced Int @default(0)
   errorMessage String?
 }
