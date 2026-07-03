@@ -18,21 +18,27 @@ model Account {
   refreshTokenExpiresAt DateTime
   lastSyncedAt DateTime?
   createdAt DateTime @default(now())
+  snapshots AccountSnapshot[]
+  videos Video[]
 }
 
 model AccountSnapshot {
   id Int @id @default(autoincrement())
   accountId Int
+  account Account @relation(fields: [accountId], references: [id])
   capturedAt DateTime
   followerCount Int?
   followingCount Int?
   totalLikeCount Int?
   videoCount Int?
+
+  @@unique([accountId, capturedAt])
 }
 
 model Video {
   id String @id
   accountId Int
+  account Account @relation(fields: [accountId], references: [id])
   description String
   hashtags String
   durationSeconds Int
@@ -43,16 +49,20 @@ model Video {
   bookmarkedAt DateTime?
   firstSeenAt DateTime @default(now())
   lastSyncedAt DateTime
+  snapshots VideoSnapshot[]
 }
 
 model VideoSnapshot {
   id Int @id @default(autoincrement())
   videoId String
+  video Video @relation(fields: [videoId], references: [id])
   capturedAt DateTime
   viewCount Int
   likeCount Int
   commentCount Int
   shareCount Int
+
+  @@unique([videoId, capturedAt])
 }
 
 model SyncLog {
